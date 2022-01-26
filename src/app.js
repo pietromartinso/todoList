@@ -34,7 +34,7 @@ App = {
     else if (window.web3) {
       App.web3Provider = web3.currentProvider
       window.web3 = new Web3(web3.currentProvider)
-      // Acccounts always exposed
+      // Accounts always exposed
       web3.eth.sendTransaction({/* ... */}) //is this really needed?
     }
     // Non-dapp browsers...
@@ -50,9 +50,9 @@ App = {
   loadContract: async () => {
     //Retrieving the TodoList.json file (generated via "truffle compile")
     const todoList = await $.getJSON('TodoList.json')
-    //Instantiting the Smart Contract into JavaScript
+    //Instantiating the Smart Contract into JavaScript
     App.contracts.TodoList = TruffleContract(todoList)
-    //Instantiting the MetaMask into the provider of our App
+    //Instantiating the MetaMask into the provider of our App
     App.contracts.TodoList.setProvider(App.web3Provider)
     //Getting the ganache deployed TodoList.sol contract
     App.todoList = await App.contracts.TodoList.deployed()
@@ -86,7 +86,7 @@ App = {
 
     //Render out each task with a new task template
     for(var i = 1; i<= taskCount; i++){
-      //Capturing atributes for task at the "i" index of our SC's mapping
+      //Capturing atributtes for task at the "i" index of our SC's mapping
       const task = await App.todoList.tasks(i)
       const taskId = task[0].toNumber()
       const taskContent = task[1]
@@ -108,6 +108,23 @@ App = {
       }
       //Show the task
       $newTaskTemplate.show()
+    }
+  },
+
+  createTask: async () => {
+    try{
+      App.setLoading(true)
+      //Retrieving the text from the HTML form to create the desired task
+      const content = $('#newTask').val()
+
+      //I had to add "{from: App.account}" as parameter 
+      //since web3 was launching "invalid address" error
+      await App.todoList.createTask(content, {from: App.account})
+      
+      //Reload the page
+      window.location.reload()
+    } catch (err){
+      console.log(err)
     }
   },
 

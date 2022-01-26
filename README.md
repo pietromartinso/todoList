@@ -36,3 +36,11 @@ npm install
   -> This means that, in my case, the web3 dependency needs to come before the truffle dependency, as truffle depends on the web3 API.
 
 - The function loadWeb3 from app.js was just "copy-pasted" from: https://github.com/dappuniversity/eth-todo-list/blob/master/src/app.js
+
+- Had to fix some erros
+  a. web3 dependency added on html scripts
+  b. Every method that requires transaction signatures (alter the blockchain)
+  had to have one more parameter added:
+  ```
+  {from: App.account}
+  ```

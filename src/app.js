@@ -86,23 +86,24 @@ App = {
 
     //Render out each task with a new task template
     for(var i = 1; i<= taskCount; i++){
-      //Capturing atributtes for task at the "i" index of our SC's mapping
+      //Capturing attributes for task at the "i" index of our SC's mapping
       const task = await App.todoList.tasks(i)
       const taskId = task[0].toNumber()
       const taskContent = task[1]
       const taskCompleted = task[2]
 
-      //Using jQuery to create the html for the task based on the template
+      console.log("Dados do SC: " + taskId + " - " + taskContent + ": " + taskCompleted)
+
       const $newTaskTemplate = $taskTemplate.clone()
       $newTaskTemplate.find('.content').html(taskContent)
-      $newTaskTemplate.find('.input')
+      $newTaskTemplate.find('input')
                       .prop('name', taskId)
                       .prop('checked', taskCompleted)
-                      //.on('click', App.toggleCompleted)
-
+                      .on('click', App.toggleCompleted)
+      
       //Put the task in the correct list
       if(taskCompleted) {
-        $('#completedTaskLIst').append($newTaskTemplate)
+        $('#completedTaskList').append($newTaskTemplate)
       } else {
         $('#taskList').append($newTaskTemplate)
       }
@@ -126,6 +127,18 @@ App = {
     } catch (err){
       console.log(err)
     }
+  },
+
+  //Passing the event e as argument ("onClick from the HTML")
+  toggleCompleted: async (e) => {
+    App.setLoading(true)
+    const taskId = e.target.name //name is set to the taskId (when taskCreated())
+
+    //I had to add "{from: App.account}" as parameter 
+    //since web3 was launching "invalid address" error
+    await App.todoList.toggleCompleted(taskId, {from: App.account})
+
+    window.location.reload()
   },
 
   setLoading: (boolean) => {
